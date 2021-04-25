@@ -1,39 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import API from '../utils/API';
-import { Table } from 'react-bootstrap'
+import React from 'react';
+import API from '../utils/API'
 
-function EmployeeTable() {
-    return (
-        <Table striped bordered hover>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Username</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td colSpan="2">Larry the Bird</td>
-                    <td>@twitter</td>
-                </tr>
-            </tbody>
-        </Table>
-    )
+class EmployeeTable extends React.Component {
+    state = {
+        data: []
+    };
+
+    componentDidMount() {
+        API.searchTerms()
+            .then((res) => {
+                let results = res.data.results;
+                this.setState({
+                    data: results
+                })
+            })
+            .catch(err => console.error(err));
+    };
+    
+    render() {
+        return (
+            <>
+                {this.state.data.map((employee, index) => (
+                    <tr key={index}>
+                        <td><img src={employee.picture.thumbnail} alt={employee.name.first + employee.name.last} /></td>
+                        <td>{employee.name.first}</td>
+                        <td>{employee.name.last}</td>
+                        <td>{employee.email}</td>
+                    </tr>
+                ))}
+            </>
+        )
+    }
 };
 
 export default EmployeeTable;
