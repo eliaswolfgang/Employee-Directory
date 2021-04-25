@@ -6,31 +6,39 @@ import { Table } from 'react-bootstrap';
 
 class App extends React.Component {
   state = {
-    search: "",
+    data: []
+  };
+
+  componentDidMount() {
+    API.searchTerms()
+      .then((res) => {
+        let results = res.data.results;
+        this.setState({
+          data: results
+        })
+      })
+      .catch(err => console.error(err));
   };
 
   handleChange = event => {
+    event.preventDefault();
     let value = event.target.value;
-    this.setState({
-      search: value
-    });
 
-      API.searchTerms()
+    API.searchTerms()
       .then((res) => {
         const searchResults = res.data.results.filter((employee) =>
-          employee.name.first.includes(this.state.search) || employee.name.last.includes(this.state.search) || employee.email.includes(this.state.search));
-        console.log(searchResults);
-        if (searchResults !== []) {
+          employee.name.first.includes(value) || employee.name.last.includes(value));
+        if (searchResults === []) {
+          alert(`No employee data matching ${value} found!`);
+        } else {
           this.setState({
             data: searchResults,
+            search: value
           });
-        } else {
-          alert(`No employee data matching ${value} found!`);
-          window.location.reload();
         }
       })
       .catch(err => console.error(err))
-  
+
   };
 
   handleHome = event => {
@@ -45,36 +53,56 @@ class App extends React.Component {
         });
       })
       .catch(err => console.error(err))
-  }
+  };
+
+  handleFirstName = event => {
+    event.preventDefault();
+    API.searchTerms()
+      .then((res) => {
+        const firstNameResults = res.data.results.map((employee, i) => (employee));
+
+        const firstSorted = firstNameResults.sort( function(a, b) {
+          if (a.name.first > b.name.first)
+        });
+
+        this.setState({
+          data: firstSorted,
+          search: ""
+        });
+      })
+      .catch(err => console.error(err))
+  };
 
 
-  render() {
-    return (
-      <div className='container'>
-        <EmployeeNavbar
-          search={this.state.search}
-          handleChange={this.handleChange}
-          handleHome={this.handleHome}
-          handleFirstName={this.handleFirstName}
-          handleLastName={this.handleLastName}
-          handleEmail={this.handleEmail}
-        />
-        <Table bordered hover>
-          <thead>
-            <tr>
-              <th></th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Email</th>
-            </tr>
-          </thead>
-          <tbody>
-            <EmployeeTable />
-          </tbody>
-        </Table>
-      </div>
-    );
-  }
+render() {
+  return (
+    <div className='container'>
+      <EmployeeNavbar
+        search={this.state.search}
+        handleChange={this.handleChange}
+        handleHome={this.handleHome}
+        handleFirstName={this.handleFirstName}
+        handleLastName={this.handleLastName}
+        handleEmail={this.handleEmail}
+      />
+      <Table bordered hover>
+        <thead>
+          <tr>
+            <th></th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <EmployeeTable
+            employees={this.state.data}
+          />
+        </tbody>
+      </Table>
+    </div>
+  );
+}
 
 
 }
