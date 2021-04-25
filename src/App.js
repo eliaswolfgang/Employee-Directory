@@ -61,12 +61,66 @@ class App extends React.Component {
       .then((res) => {
         const firstNameResults = res.data.results.map((employee, i) => (employee));
 
-        const firstSorted = firstNameResults.sort( function(a, b) {
-          if (a.name.first > b.name.first)
+        firstNameResults.sort(function (a, b) {
+          if (a.name.first > b.name.first) {
+            return 1
+          }
+          if (a.name.first < b.name.first) {
+            return -1
+          }
+          return 0
         });
 
         this.setState({
-          data: firstSorted,
+          data: firstNameResults,
+          search: ""
+        });
+      })
+      .catch(err => console.error(err))
+  };
+
+  handleLastName = event => {
+    event.preventDefault();
+    API.searchTerms()
+      .then((res) => {
+        const lastNameResults = res.data.results.map((employee, i) => (employee));
+
+        lastNameResults.sort(function (a, b) {
+          if (a.name.last > b.name.last) {
+            return 1
+          }
+          if (a.name.last < b.name.last) {
+            return -1
+          }
+          return 0
+        });
+
+        this.setState({
+          data: lastNameResults,
+          search: ""
+        });
+      })
+      .catch(err => console.error(err))
+  };
+
+  handleEmail = event => {
+    event.preventDefault();
+    API.searchTerms()
+      .then((res) => {
+        const emailResults = res.data.results.map((employee, i) => (employee));
+
+        emailResults.sort(function (a, b) {
+          if (a.email > b.email) {
+            return 1
+          }
+          if (a.email < b.email) {
+            return -1
+          }
+          return 0
+        });
+
+        this.setState({
+          data: emailResults,
           search: ""
         });
       })
@@ -74,37 +128,35 @@ class App extends React.Component {
   };
 
 
-render() {
-  return (
-    <div className='container'>
-      <EmployeeNavbar
-        search={this.state.search}
-        handleChange={this.handleChange}
-        handleHome={this.handleHome}
-        handleFirstName={this.handleFirstName}
-        handleLastName={this.handleLastName}
-        handleEmail={this.handleEmail}
-      />
-      <Table bordered hover>
-        <thead>
-          <tr>
-            <th></th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          <EmployeeTable
-            employees={this.state.data}
-          />
-        </tbody>
-      </Table>
-    </div>
-  );
-}
-
-
+  render() {
+    return (
+      <div className='container'>
+        <EmployeeNavbar
+          search={this.state.search}
+          handleChange={this.handleChange}
+          handleHome={this.handleHome}
+          handleFirstName={this.handleFirstName}
+          handleLastName={this.handleLastName}
+          handleEmail={this.handleEmail}
+        />
+        <Table bordered hover>
+          <thead>
+            <tr>
+              <th></th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            <EmployeeTable
+              employees={this.state.data}
+            />
+          </tbody>
+        </Table>
+      </div>
+    );
+  }
 }
 
 export default App;
