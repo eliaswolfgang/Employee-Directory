@@ -10,45 +10,35 @@ let firstNameResults = [];
 let lastNameResults = [];
 let emailResults = [];
 
-API.searchTerms()
-  .then((res) => {
-    results = res.data.results;
-    nameResults = res.data.results.map((employee, i) => (employee));
-    firstNameResults = nameResults.sort(compareFirst);
-    lastNameResults = nameResults.sort(compareLast);
-    emailResults = nameResults.sort(compareEmail);
-  })
-  .catch(err => console.error(err));
+function compareFirst(a, b) {
+  if (a.name.first > b.name.first) {
+    return 1
+  }
+  if (a.name.first < b.name.first) {
+    return -1
+  }
+  return 0
+};
 
-  function compareFirst(a, b) {
-    if (a.name.first > b.name.first) {
-      return 1
-    }
-    if (a.name.first < b.name.first) {
-      return -1
-    }
-    return 0
-  };
+function compareLast(a, b) {
+  if (a.name.last > b.name.last) {
+    return 1
+  }
+  if (a.name.last < b.name.last) {
+    return -1
+  }
+  return 0
+};
 
-  function compareLast(a, b) {
-    if (a.name.last > b.name.last) {
-      return 1
-    }
-    if (a.name.last < b.name.last) {
-      return -1
-    }
-    return 0
-  };
-
-  function compareEmail(a, b) {
-    if (a.email > b.email) {
-      return 1
-    }
-    if (a.email < b.email) {
-      return -1
-    }
-    return 0
-  };
+function compareEmail(a, b) {
+  if (a.email > b.email) {
+    return 1
+  }
+  if (a.email < b.email) {
+    return -1
+  }
+  return 0
+};
 
 class App extends React.Component {
   state = {
@@ -57,12 +47,25 @@ class App extends React.Component {
   };
 
   componentDidMount() {
-    this.setState({
-      data: [results],
-      search: ""
-    });
-  };
+    API.searchTerms()
+      .then((res) => {
+        results = res.data.results;
+        nameResults = res.data.results.map((employee, i) => (employee));
+        firstNameResults = nameResults.sort(compareFirst);
+        lastNameResults = res.data.results.map((employee, i) => (employee)).sort(compareLast);
+        emailResults = res.data.results.map((employee, i) => (employee)).sort(compareEmail);
 
+        this.setState({
+          data: results,
+          search: ""
+        });
+        
+      })
+      .catch(err => console.error(err));
+
+    
+  };
+  
   handleChange = event => {
     event.preventDefault();
     let value = event.target.value;
@@ -72,7 +75,7 @@ class App extends React.Component {
     const searchResults = results.filter((employee) =>
       employee.name.first.includes(value) || employee.name.last.includes(value));
     this.setState({
-      data: [searchResults],
+      data: searchResults,
       search: value
     });
   }
@@ -89,7 +92,7 @@ class App extends React.Component {
   handleFirstName = event => {
     event.preventDefault();
     this.setState({
-      data: [firstNameResults],
+      data: firstNameResults,
       search: ""
     });
   };
@@ -97,7 +100,7 @@ class App extends React.Component {
   handleLastName = event => {
     event.preventDefault();
     this.setState({
-      data: [lastNameResults],
+      data: lastNameResults,
       search: ""
     });
   };
@@ -105,7 +108,7 @@ class App extends React.Component {
   handleEmail = event => {
     event.preventDefault();
     this.setState({
-      data: [emailResults],
+      data: emailResults,
       search: ""
     });
   };
