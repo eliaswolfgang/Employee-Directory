@@ -5,7 +5,6 @@ import API from './utils/API'
 import { Table } from 'react-bootstrap';
 
 let results = [];
-let nameResults = [];
 let firstNameResults = [];
 let lastNameResults = [];
 let emailResults = [];
@@ -50,20 +49,13 @@ class App extends React.Component {
     API.searchTerms()
       .then((res) => {
         results = res.data.results;
-        nameResults = res.data.results.map((employee, i) => (employee));
-        firstNameResults = nameResults.sort(compareFirst);
-        lastNameResults = res.data.results.map((employee, i) => (employee)).sort(compareLast);
-        emailResults = res.data.results.map((employee, i) => (employee)).sort(compareEmail);
-
         this.setState({
           data: results,
           search: ""
         });
         
       })
-      .catch(err => console.error(err));
-
-    
+      .catch(err => console.error(err));  
   };
   
   handleChange = event => {
@@ -80,7 +72,6 @@ class App extends React.Component {
     });
   }
 
-
   handleHome = event => {
     event.preventDefault();
     this.setState({
@@ -91,6 +82,8 @@ class App extends React.Component {
 
   handleFirstName = event => {
     event.preventDefault();
+    let currentData = this.state.data;
+    firstNameResults = currentData.sort(compareFirst);
     this.setState({
       data: firstNameResults,
       search: ""
@@ -99,6 +92,8 @@ class App extends React.Component {
 
   handleLastName = event => {
     event.preventDefault();
+    let currentData = this.state.data;
+    lastNameResults = currentData.sort(compareLast);
     this.setState({
       data: lastNameResults,
       search: ""
@@ -107,6 +102,8 @@ class App extends React.Component {
 
   handleEmail = event => {
     event.preventDefault();
+    let currentData = this.state.data;
+    emailResults = currentData.sort(compareEmail);
     this.setState({
       data: emailResults,
       search: ""

@@ -16,7 +16,8 @@ function EmployeeNavbar(props) {
                     </NavDropdown>
                 </Nav>
                 <Form inline>
-                    <FormControl type="text" placeholder="Search by first letter" className="mr-sm-2" value={props.search} onChange={props.handleChange}/>
+                    <Form.Label>Search by first or last name&nbsp;</Form.Label>
+                    <FormControl controlId="Search"type="text" placeholder="Search" className="mr-sm-2" value={props.search} onChange={props.handleChange}/>
                 </Form>
             </Navbar.Collapse>
         </Navbar>
