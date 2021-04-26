@@ -4,129 +4,111 @@ import EmployeeTable from './components/EmployeeTable';
 import API from './utils/API'
 import { Table } from 'react-bootstrap';
 
+let results = [];
+let nameResults = [];
+let firstNameResults = [];
+let lastNameResults = [];
+let emailResults = [];
+
+API.searchTerms()
+  .then((res) => {
+    results = res.data.results;
+    nameResults = res.data.results.map((employee, i) => (employee));
+    firstNameResults = nameResults.sort(compareFirst);
+    lastNameResults = nameResults.sort(compareLast);
+    emailResults = nameResults.sort(compareEmail);
+  })
+  .catch(err => console.error(err));
+
+  function compareFirst(a, b) {
+    if (a.name.first > b.name.first) {
+      return 1
+    }
+    if (a.name.first < b.name.first) {
+      return -1
+    }
+    return 0
+  };
+
+  function compareLast(a, b) {
+    if (a.name.last > b.name.last) {
+      return 1
+    }
+    if (a.name.last < b.name.last) {
+      return -1
+    }
+    return 0
+  };
+
+  function compareEmail(a, b) {
+    if (a.email > b.email) {
+      return 1
+    }
+    if (a.email < b.email) {
+      return -1
+    }
+    return 0
+  };
+
 class App extends React.Component {
   state = {
-    data: []
+    data: [],
+    search: ""
   };
 
   componentDidMount() {
-    API.searchTerms()
-      .then((res) => {
-        let results = res.data.results;
-        this.setState({
-          data: results
-        })
-      })
-      .catch(err => console.error(err));
+    this.setState({
+      data: [results],
+      search: ""
+    });
   };
 
   handleChange = event => {
     event.preventDefault();
     let value = event.target.value;
+    this.setState({
+      search: value
+    });
+    const searchResults = results.filter((employee) =>
+      employee.name.first.includes(value) || employee.name.last.includes(value));
+    this.setState({
+      data: [searchResults],
+      search: value
+    });
+  }
 
-    API.searchTerms()
-      .then((res) => {
-        const searchResults = res.data.results.filter((employee) =>
-          employee.name.first.includes(value) || employee.name.last.includes(value));
-        if (searchResults === []) {
-          alert(`No employee data matching ${value} found!`);
-        } else {
-          this.setState({
-            data: searchResults,
-            search: value
-          });
-        }
-      })
-      .catch(err => console.error(err))
-
-  };
 
   handleHome = event => {
     event.preventDefault();
-
-    API.searchTerms()
-      .then((res) => {
-        const results = res.data.results;
-        this.setState({
-          data: results,
-          search: ""
-        });
-      })
-      .catch(err => console.error(err))
+    this.setState({
+      data: results,
+      search: ""
+    });
   };
 
   handleFirstName = event => {
     event.preventDefault();
-    API.searchTerms()
-      .then((res) => {
-        const firstNameResults = res.data.results.map((employee, i) => (employee));
-
-        firstNameResults.sort(function (a, b) {
-          if (a.name.first > b.name.first) {
-            return 1
-          }
-          if (a.name.first < b.name.first) {
-            return -1
-          }
-          return 0
-        });
-
-        this.setState({
-          data: firstNameResults,
-          search: ""
-        });
-      })
-      .catch(err => console.error(err))
+    this.setState({
+      data: [firstNameResults],
+      search: ""
+    });
   };
 
   handleLastName = event => {
     event.preventDefault();
-    API.searchTerms()
-      .then((res) => {
-        const lastNameResults = res.data.results.map((employee, i) => (employee));
-
-        lastNameResults.sort(function (a, b) {
-          if (a.name.last > b.name.last) {
-            return 1
-          }
-          if (a.name.last < b.name.last) {
-            return -1
-          }
-          return 0
-        });
-
-        this.setState({
-          data: lastNameResults,
-          search: ""
-        });
-      })
-      .catch(err => console.error(err))
+    this.setState({
+      data: [lastNameResults],
+      search: ""
+    });
   };
 
   handleEmail = event => {
     event.preventDefault();
-    API.searchTerms()
-      .then((res) => {
-        const emailResults = res.data.results.map((employee, i) => (employee));
-
-        emailResults.sort(function (a, b) {
-          if (a.email > b.email) {
-            return 1
-          }
-          if (a.email < b.email) {
-            return -1
-          }
-          return 0
-        });
-
-        this.setState({
-          data: emailResults,
-          search: ""
-        });
-      })
-      .catch(err => console.error(err))
+    this.setState({
+      data: [emailResults],
+      search: ""
+    });
   };
-
 
   render() {
     return (
